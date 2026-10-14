@@ -5,11 +5,19 @@ const CANDIDATES = 5;          // 直線距離の近い順に、実経路を調�
 const WALK_M_PER_MIN = 80;     // 徒歩速度(約4.8km/h)
 const ROUTE_API = 'https://routing.openstreetmap.de/routed-foot/route/v1/foot/';
 
-const map = L.map('map').setView([32.8032, 130.7079], 14);
+if (typeof L === 'undefined') {
+  document.getElementById('status').textContent = '地図ライブラリ(Leaflet)を読み込めませんでした。通信状況を確認してください。';
+  throw new Error('Leaflet not loaded');
+}
+// 日田市の中心(日田駅周辺)と市域のおおよその範囲
+const HITA_CENTER = [33.3214, 130.9392];
+const HITA_BOUNDS = L.latLngBounds([33.10, 130.60], [33.50, 131.15]);
+const map = L.map('map', { minZoom: 10, maxBounds: HITA_BOUNDS.pad(0.1) }).setView(HITA_CENTER, 15);
 L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png', {
   maxZoom: 18,
   attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html">地理院タイル</a>'
-}).addTo(map);
+}).on('tileerror', () => setStatus('地図タイルを読み込めません。通信状況を確認してください。', true)).addTo(map);
+setTimeout(() => map.invalidateSize(), 200);
 
 let aeds = [], aedMarkers = [], startMarker = null, routeLayer = null;
 const $ = id => document.getElementById(id);
@@ -90,6 +98,10 @@ async function fetchRoute(from, to) {
 async function search(from) {
   if (!aeds.length) return setStatus('AEDデータがありません。', true);
   $('btn-locate').disabled = true;
+  if (!HITA_BOUNDS.contains(from)) {
+    $('btn-locate').disabled = false;
+    return setStatus('指定された地点は日田市の範囲外です。日田市内の地点を指定してください。', true);
+  }
   setStatus('最短経路を計算中...');
   // 1) 直線距離で候補を絞り込み → 2) 実際の徒歩経路距離で最短を決定
   const cands = aeds.map(a => ({ a, straight: haversine(from, a) })).sort((x, y) => x.straight - y.straight).slice(0, CANDIDATES);

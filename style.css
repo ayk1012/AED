@@ -1,11 +1,11 @@
 :root{--red:#d62828;--ink:#1d2433;--bg:#f6f7f9;--line:#dfe3ea}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
-body{display:flex;flex-direction:column;font-family:"Hiragino Sans","Meiryo",sans-serif;color:var(--ink);background:var(--bg)}
+body{display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;height:100vh;height:100dvh;font-family:"Hiragino Sans","Meiryo",sans-serif;color:var(--ink);background:var(--bg)}
 header{background:var(--red);color:#fff;padding:.6rem 1rem}
 header h1{margin:0;font-size:1.25rem}
 header p{margin:.1rem 0 0;font-size:.8rem;opacity:.9}
-#map{flex:1;min-height:260px}
+#map{min-height:0;width:100%;height:100%}
 #panel{padding:.8rem 1rem;background:#fff;border-top:1px solid var(--line);max-height:45vh;overflow-y:auto}
 .actions{display:flex;gap:.5rem}
 button{font:inherit;border:0;border-radius:8px;padding:.75rem 1rem;cursor:pointer;font-weight:700}
@@ -24,4 +24,5 @@ button:disabled{opacity:.6;cursor:wait}
 .aed-icon{background:var(--red);color:#fff;border:2px solid #fff;border-radius:50%;width:24px;height:24px;line-height:20px;text-align:center;font-size:12px;font-weight:800;box-shadow:0 1px 4px #0006}
 .aed-icon.best{background:#16794c;width:30px;height:30px;line-height:26px;font-size:14px}
 footer{font-size:.72rem;padding:.4rem 1rem;background:#fff;color:#586075;border-top:1px solid var(--line)}
-@media(min-width:800px){body{flex-direction:row;flex-wrap:wrap}header,footer{width:100%}#map{order:1}#panel{order:1;width:380px;max-height:none;border-top:0;border-left:1px solid var(--line)}}
+@media(min-width:800px){body{grid-template-columns:1fr 380px;grid-template-rows:auto minmax(0,1fr) auto}header,footer{grid-column:1/-1}#panel{max-height:none;border-top:0;border-left:1px solid var(--line)}}
+
